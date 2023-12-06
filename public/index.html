@@ -1,0 +1,52 @@
+<!-- public/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load('current', { 'packages': ['gauge'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      socket.on('temperature', (temperature) => {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Temperatuur', temperature]
+        ]);
+
+        var options = {
+          width: 400, height: 120,
+          redFrom: 90, redTo: 100,
+          yellowFrom: 75, yellowTo: 90,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <h1>Temperatuur Pagina</h1>
+  <p id="temperature">Temperatuur: Loading...</p>
+
+  <div id="chart_div" style="width: 400px; height: 120px;"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('temperature', (temperature) => {
+      document.getElementById('temperature').innerText = `Temperatuur: ${temperature}`;
+    });
+  </script>
+</body>
+
+</html>
